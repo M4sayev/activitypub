@@ -74,7 +74,18 @@ public class InMemoryServer implements Server {
 
     @Override
     public boolean addFollower(String followerId, String targetId) throws ActivityPubException {
+        Actor target = actors.get(targetId);
+        Actor follower = actors.get(followerId);
 
+        if (follower == null || target == null)
+            throw new ActivityPubException("Follower or target actor not found");
+
+        if (target.followedActors.containsKey(followerId)) return false;
+
+        target.followedActors.put(followerId, follower);
+        follower.followingActors.put(targetId, target);
+
+        return true;
     }
 
     @Override
