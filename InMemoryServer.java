@@ -124,15 +124,23 @@ public class InMemoryServer implements Server {
     @Override
     public List<Actor> getFollowers(String fullId) {
         Optional<Actor> givenActor = getActor(fullId);
-        
+
         if (givenActor.isPresent()) {
             Actor actor = givenActor.get();
-            return new ArrayList<>(actor.followedActors.values());
-        }
         
+            List<Actor> followers = new ArrayList<>();
+            for (Actor a : actors.values()) {
+                if (a.followingActors.containsKey(actor.username)) {
+                    followers.add(a);
+                }
+            }
+            return followers;
+        }
+
         System.out.println("Actor not found");
         return Collections.emptyList();
     }
+
 
     @Override
     public List<Actor> getFollowing(String fullId) {
@@ -164,7 +172,10 @@ public class InMemoryServer implements Server {
         Activity act = new Activity(type, actorId, content);
         actor.outbox.add(act);
 
-        receiveActivity(act, actorId);
+        for (Actor follower : getFollowers(actorId)) {
+            follower.inbox.add(0, act);
+        }
+
         return act;
     }
 

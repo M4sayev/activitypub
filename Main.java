@@ -11,7 +11,7 @@ public class Main {
         server.listAllActors().forEach(a -> System.out.println(a.getFullId()));
 
         // Follow relationship
-        server.follow("alice", "bob");
+        server.follow("bob", "alice");
         System.out.println("Alice now follows Bob? " + server.isFollowing("alice", "bob"));
 
         // Create activity (Alice posts something)
